@@ -15,86 +15,6 @@ warnings.filterwarnings('ignore')
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置中文字体
 plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 
-"""
-def clustering_analysis(df, n_clusters=5):
-    # 选择用于聚类的特征
-    # 选择用于建模的特征
-    clustering_features = [ 'shelf_duration','intro_length', 'publish_year', 'publish_month']
-    # 添加zscore特征, 和编码特征
-    clustering_features.extend([col for col in df.columns if 'zscore' in col])
-    clustering_features.extend([col for col in df.columns if '_code' in col])
-
-    print(f"聚类特征: {clustering_features}")
-
-    # 准备聚类数据，处理缺失值和非数值型数据
-    cluster_data = df[clustering_features].copy()
-    for col in clustering_features:
-        cluster_data[col] = pd.to_numeric(cluster_data[col], errors='coerce')
-    cluster_data = cluster_data.fillna(cluster_data.mean())
-
-    # 标准化数据
-    scaler = StandardScaler()
-    cluster_data_scaled = scaler.fit_transform(cluster_data)
-
-    # 确定最佳聚类数
-    silhouette_scores = []
-    k_range = range(2, min(11, len(cluster_data) // 10))  # 避免聚类数过多
-
-    for k in k_range:
-        kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
-        labels = kmeans.fit_predict(cluster_data_scaled)
-        score = silhouette_score(cluster_data_scaled, labels)
-        silhouette_scores.append(score)
-
-    # 选择最佳k值
-    if silhouette_scores:
-        best_k = k_range[np.argmax(silhouette_scores)]
-        print(f"最佳聚类数: {best_k} (轮廓系数: {max(silhouette_scores):.3f})")
-    else:
-        best_k = n_clusters
-        print(f"使用默认聚类数: {best_k}")
-
-    # K-means聚类
-    kmeans = KMeans(n_clusters=best_k, random_state=42, n_init=10)
-    cluster_labels = kmeans.fit_predict(cluster_data_scaled)
-
-    # 添加聚类标签到数据框
-    df['cluster'] = cluster_labels
-
-    # 分析各聚类的特征
-    analysis_cols = ['reading_count', 'total_readers', 'recommendation',
-                     'word_count', 'rating_count']
-    available_cols = [col for col in analysis_cols if col in df.columns]
-
-    if available_cols:
-        cluster_stats = df.groupby('cluster')[available_cols].mean().round(2)
-        print(f"\n聚类结果统计:")
-        print(cluster_stats)
-
-    # PCA降维可视化
-    if len(clustering_features) > 1:
-        pca = PCA(n_components=2)
-        pca_result = pca.fit_transform(cluster_data_scaled)
-
-        plt.figure(figsize=(10, 8))
-        scatter = plt.scatter(pca_result[:, 0], pca_result[:, 1], c=cluster_labels, cmap='viridis', alpha=0.6)
-        plt.colorbar(scatter)
-        plt.title(f'K-means聚类结果 (PCA降维可视化, K={best_k})')
-        plt.xlabel(f'第一主成分 (解释方差: {pca.explained_variance_ratio_[0]:.2%})')
-        plt.ylabel(f'第二主成分 (解释方差: {pca.explained_variance_ratio_[1]:.2%})')
-        plt.grid(alpha=0.3)
-        plt.tight_layout()
-        plt.show()
-
-    # 各聚类的分类分布
-    if 'category' in df.columns:
-        cluster_category = pd.crosstab(df['cluster'], df['category'])
-        print("\n各聚类的分类分布:")
-        print(cluster_category)
-
-    return df
-"""
-
 def predict_analysis(df, target='recommendation', cv_folds=5):
     """预测分析"""
 
@@ -322,7 +242,6 @@ def main():
     # 读取数据
     df = pd.read_csv('../data/weread_books_cleaned.csv')
 
-    # clustering_analysis(df)
 
     # 预测分析
     results = predict_analysis(df, target='recommendation')

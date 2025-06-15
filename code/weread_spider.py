@@ -57,7 +57,7 @@ class WeReadScraper:
             logger.error(f"设置浏览器驱动失败: {e}")
             return False
 
-    def get_page_content(self, url, scroll_times=1, wait_time=1):
+    def get_page_content(self, url, scroll_times=10, wait_time=1):
         """
         获取页面内容
 
@@ -589,7 +589,7 @@ def main():
 
     # 使用上下文管理器确保资源正确释放
     with scraper:
-        books = scraper.scrape_targeturl(url, './data/test.csv')
+        books = scraper.scrape_targeturl(url, './data/weread_books_detailed.csv')
         logger.info(f"爬取完成，总共获取 {len(books)} 本书籍信息")
 
 
