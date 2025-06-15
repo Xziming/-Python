@@ -36,32 +36,28 @@ class WeReadScraper:
         """设置Chrome浏览器驱动"""
         try:
             options = webdriver.ChromeOptions()
-            if self.headless:
-                options.add_argument('--headless')
-            options.add_argument('--no-proxy-server')
-            options.add_argument('--proxy-server=""')
+
+            options.add_argument('--headless')
+
+            # 反检测设置
             options.add_argument('--disable-blink-features=AutomationControlled')
             options.add_experimental_option("excludeSwitches", ["enable-automation"])
             options.add_experimental_option('useAutomationExtension', False)
 
             # 添加用户代理
             options.add_argument(
-                '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+                '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
 
-            if self.driver_path:
-                service = Service(self.driver_path)
-                self.driver = webdriver.Chrome(service=service, options=options)
-            else:
-                self.driver = webdriver.Chrome(options=options)
-
-            self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+            service = Service(self.driver_path)
+            self.driver = webdriver.Chrome(service=service, options=options)
             return True
 
         except Exception as e:
             logger.error(f"设置浏览器驱动失败: {e}")
             return False
 
-    def get_page_content(self, url, scroll_times=10, wait_time=1):
+    def get_page_content(self, url, scroll_times=1, wait_time=1):
         """
         获取页面内容
 
@@ -71,11 +67,12 @@ class WeReadScraper:
             wait_time: 每次滚动后等待时间
         """
         try:
+            # 访问页面
             self.driver.get(url)
             logger.info(f"正在访问: {url}")
 
             # 等待页面加载
-            time.sleep(2)
+            time.sleep(1)
 
             # 滚动页面加载更多内容
             for i in range(scroll_times):
@@ -585,16 +582,16 @@ def main():
         'https://weread.qq.com/web/category/1500003',
         'https://weread.qq.com/web/category/1500004',
         'https://weread.qq.com/web/category/1500005',
+
     ]
 
     scraper = WeReadScraper(get_detail=True)
 
     # 使用上下文管理器确保资源正确释放
     with scraper:
-        books = scraper.scrape_targeturl(url, '../data/weread_books_detailed.csv')
+        books = scraper.scrape_targeturl(url, './data/test.csv')
         logger.info(f"爬取完成，总共获取 {len(books)} 本书籍信息")
 
 
 if __name__ == '__main__':
     main()
-
